@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { registerUser } from '../controllers/auth'
+import { registerUser, authenticateUser } from '../controllers/auth'
 
 const router = Router()
 
@@ -14,11 +14,13 @@ router.post('/register', async (req, res) => {
 })
 
 router.post('/login', async (req, res) => {
-  res.send('login endpoint')
-})
-
-router.post('/reset-password', async (req, res) => {
-  res.send('reset password endpoint')
+  const { email, password } = req.body
+  try {
+    const { status, message, token } = await authenticateUser(email, password)
+    res.status(status).json({ message, data: { token }})
+  } catch(error: any) {
+    res.status(403).json({ message: 'Invalid credentials', error: error.message })
+  }
 })
 
 export default router
