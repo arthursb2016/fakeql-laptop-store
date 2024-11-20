@@ -4,8 +4,13 @@ import { ApolloServer } from '@apollo/server'
 import { json } from 'body-parser'
 import cors from 'cors'
 import helmet from 'helmet'
+import mongoose from 'mongoose'
+import dotenv from 'dotenv'
+dotenv.config()
+
 import { typeDefs } from './graphql/schema'
 import { resolvers } from './graphql/resolvers'
+
 import authRoutes from './routes/auth'
 import { authMiddleware } from './middlewares/auth'
 
@@ -33,6 +38,14 @@ const startServer = async () => {
       }
     })
   )
+
+  try {
+    await mongoose.connect(process.env.MONGO_URI || '')
+    console.log('Connected to MongoDB')
+  } catch (error) {
+    console.error('Error connecting to MongoDB:', error)
+    process.exit(1)
+  }
 
   app.listen(4000, () => {
     console.log('Server is running on http://localhost:4000')
