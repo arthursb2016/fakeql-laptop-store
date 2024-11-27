@@ -7,7 +7,6 @@ export async function registerUser(name: string, email: string, password: string
     return { status: 400, message: 'Email already exists', user: undefined }
   }
   user = await User.create({ name, email, password })
-  console.log('controller', user)
   return {
     status: 201,
     message: 'User successfully created',
@@ -20,7 +19,7 @@ export async function authenticateUser(email: string, password: string) {
   if (!user) {
     return { status: 400, message: 'Invalid credentials' }
   }
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, { expiresIn: '7 days' })
+  const token = jwt.sign({ user: user }, process.env.JWT_SECRET!, { expiresIn: '7 days' })
   return {
     status: 200,
     message: 'Login successful',
